@@ -1,6 +1,7 @@
 <template>
   <div class="goods-item">
-    <img :src="goodsItem.show.img" alt="">
+    <!-- @load 监听加载  监听后调用scroll的refresh-->
+    <img :src="goodsItem.show.img" alt="" @load="imgLoad">
     <div class="goods-info">
       <p>{{goodsItem.title}}</p>
       <span class="price">{{goodsItem.price}}</span>
@@ -20,7 +21,13 @@ export default {
         return {}
       }
     }
-  }
+  },
+  methods: {
+    imgLoad() {
+      // 通过事件总线发送事件
+      this.$bus.$emit('itemImageLoad')
+    }
+  },
 }
 </script>
 

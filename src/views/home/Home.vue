@@ -4,8 +4,12 @@
     <nav-bar class="home-nav">
       <div slot="center">购物街</div>
     </nav-bar>
-
-    <scroll class="content">
+    <!-- Better-Scroll 控制的滑动 -->
+    <scroll class="content" 
+            ref="scroll" 
+            :probe-type="3" 
+            @scroll="contentScroll"
+            :pull-up-load="true">
       <home-swiper :banners="banners"></home-swiper>
       <recommend-view :recommends="recommends"/>
       <feature-view></feature-view>
@@ -15,6 +19,9 @@
       @tabClick="tabClick"/>
       <goods-list :goods="showGoods"/>  
     </scroll>
+
+    <!-- 组件想要直接监听原生事件要增加一个native修饰符 -->
+    <back-top @click.native="backClick" v-show="isShowBackTop"/>
   </div>
 </template>
 
@@ -24,6 +31,7 @@
   import TabControl from 'components/content/tabControl/TabControl'
   import GoodsList from 'components/content/goods/GoodsList'
   import Scroll from 'components/common/scroll/Scroll'
+  import BackTop from 'components/content/backTop/BackTop'
   // 首页子组件
   import HomeSwiper from './childComps/HomeSwiper'
   import RecommendView from './childComps/RecommendView'
@@ -40,7 +48,8 @@
       FeatureView,
       TabControl,
       GoodsList,
-      Scroll
+      Scroll,
+      BackTop
     },
     // 因为created中的函数执行后如果数据不进行保存就会在函数执行结束后小时
     // 所以在data中创建一个变量来存储数据
@@ -54,7 +63,9 @@
           'sell': {page: 0, list: []}
         },
         // 数据默认展示为 pop
-        currentType: 'pop'
+        currentType: 'pop',
+        // 右下角一键到顶按钮是否显示
+        isShowBackTop: false
       }
     },
     created() {
@@ -66,6 +77,11 @@
       this.getHomeGoods('pop')
       this.getHomeGoods('new')
       this.getHomeGoods('sell')
+
+      // 监听item图片加载
+      this.$bus.$on('itemImageLoad', () => {
+        this.$refs.scroll.refresh()
+      })
     },
     // 通过计算属性来更改数据的切换
     computed: {
@@ -90,12 +106,18 @@
             break            
         }
       },
+      backClick() {
+        this.$refs.scroll.scrollTo(0, 0, 800)
+      },
+      contentScroll(position) {
+        // 因为position是负数
+        this.isShowBackTop = (-position.y) > 1000
+      },
       /**
        * 网络请求的方法
        */
       getHomeMultidata() {
         getHomeMultidata().then(res => {
-          // console.log(res);
           this.banners = res.data.banner.list,
           this.recommends = res.data.recommend.list
         })
@@ -104,8 +126,10 @@
         const page = this.goods[type].page + 1
         getHomeGoods(type, page).then(res => {
           this.goods[type].list.push(...res.data.list)
+          this.goods[type].page += 1
         })
       }
+
     },
   };
 </script>
