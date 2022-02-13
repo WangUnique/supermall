@@ -12,7 +12,8 @@
     name: 'App',
     components: {
       MainTabBar,
-    }
+    },
+    
   }
 </script>
 

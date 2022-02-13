@@ -9,7 +9,8 @@
             ref="scroll" 
             :probe-type="3" 
             @scroll="contentScroll"
-            :pull-up-load="true">
+            :pull-up-load="true"
+            @pullingUp="loadMore">
       <home-swiper :banners="banners"></home-swiper>
       <recommend-view :recommends="recommends"/>
       <feature-view></feature-view>
@@ -39,6 +40,7 @@
   // 网络请求数据
 
   import {getHomeMultidata,getHomeGoods} from "network/home"
+  import { debounce } from "common/utils"
   export default {
     name: 'Home',
     components: {
@@ -78,9 +80,15 @@
       this.getHomeGoods('new')
       this.getHomeGoods('sell')
 
-      // 监听item图片加载
+    },
+    mounted() {
+      // 监听item图片加载 
+      // 在mounted里监听是因为为了保证this.$refs是有值的
+
+      const refresh = debounce(this.$refs.scroll.refresh, 200)
+
       this.$bus.$on('itemImageLoad', () => {
-        this.$refs.scroll.refresh()
+        refresh()
       })
     },
     // 通过计算属性来更改数据的切换
@@ -113,6 +121,9 @@
         // 因为position是负数
         this.isShowBackTop = (-position.y) > 1000
       },
+      loadMore(){
+        this.getHomeGoods(this.currentType)
+      },
       /**
        * 网络请求的方法
        */
@@ -127,6 +138,10 @@
         getHomeGoods(type, page).then(res => {
           this.goods[type].list.push(...res.data.list)
           this.goods[type].page += 1
+
+          // scroll的特殊性只能刷新一次数据
+          // 所以需要通过完成函数来解决
+          this.$refs.scroll.finishPullUp()
         })
       }
 
