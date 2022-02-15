@@ -4,6 +4,11 @@
     <nav-bar class="home-nav">
       <div slot="center">购物街</div>
     </nav-bar>
+    <tab-control 
+      :titles="['流行','新款','精选']"
+      @tabClick="tabClick"
+      ref="tabControl1"
+      class="tab-control" v-show="isTabFixed"/>
     <!-- Better-Scroll 控制的滑动 -->
     <scroll class="content" 
             ref="scroll" 
@@ -11,13 +16,13 @@
             @scroll="contentScroll"
             :pull-up-load="true"
             @pullingUp="loadMore">
-      <home-swiper :banners="banners"></home-swiper>
+      <home-swiper :banners="banners" @swiperImageLoad="swiperImageLoad"></home-swiper>
       <recommend-view :recommends="recommends"/>
       <feature-view></feature-view>
       <tab-control 
-      :titles="['流行','新款','精选']" 
-      class="tab-control"
-      @tabClick="tabClick"/>
+      :titles="['流行','新款','精选']"
+      @tabClick="tabClick"
+      ref="tabControl2"/>
       <goods-list :goods="showGoods"/>  
     </scroll>
 
@@ -67,7 +72,13 @@
         // 数据默认展示为 pop
         currentType: 'pop',
         // 右下角一键到顶按钮是否显示
-        isShowBackTop: false
+        isShowBackTop: false,
+        // 吸顶效果的位置
+        tabOffsetTop: 0,
+        // 默认情况下是否吸顶
+        isTabFixed: false,
+        // 默认的留存位置坐标
+        saveY: 0
       }
     },
     created() {
@@ -84,12 +95,20 @@
     mounted() {
       // 监听item图片加载 
       // 在mounted里监听是因为为了保证this.$refs是有值的
-
       const refresh = debounce(this.$refs.scroll.refresh, 200)
-
       this.$bus.$on('itemImageLoad', () => {
         refresh()
       })
+
+
+
+    },
+    activated() {
+      this.$refs.scroll.scrollTo(0, this.saveY, 0)
+      this.$refs.scroll.refresh()
+    },
+    deactivated() {
+      this.saveY = this.$refs.scroll.getScrollY()
     },
     // 通过计算属性来更改数据的切换
     computed: {
@@ -113,16 +132,27 @@
             this.currentType = 'sell'
             break            
         }
+        // 为了使两个tabcontrol的点击选项一致
+        this.$refs.tabControl1.currentIndex = index
+        this.$refs.tabControl2.currentIndex = index
       },
       backClick() {
         this.$refs.scroll.scrollTo(0, 0, 800)
       },
       contentScroll(position) {
-        // 因为position是负数
+        // 判断BackTop是否显示，因为position是负数所以取负值
         this.isShowBackTop = (-position.y) > 1000
+
+        // 决定tabControl是否吸顶（position: fixed）
+        this.isTabFixed = (-position.y) > this.tabOffsetTop
       },
       loadMore(){
         this.getHomeGoods(this.currentType)
+      },
+      swiperImageLoad() {
+        // 为吸顶参数赋值
+        // 上方这里获取的是一个组件，而组件都有一个元素叫$el 用于获取组建的元素
+        this.tabOffsetTop = this.$refs.tabControl2.$el.offsetTop
       },
       /**
        * 网络请求的方法
@@ -152,8 +182,7 @@
 <style scoped>
   #home {
     height: 100vh;
-    padding-top: 44px;
-
+    /* padding-top: 44px; */
     position: relative;
   }
 
@@ -161,16 +190,17 @@
     background-color: var(--color-tint);
     color: #fff;
 
-    position: fixed;
+    /* 在使用原生滚动时 防止跟随浏览器一起滚动 */
+    /* position: fixed;
     left: 0;
     right: 0;
     top: 0;
-    z-index: 999;
+    z-index: 999; */
   }
 
   .tab-control {
-    position: sticky;
-    top: 44px;
+    /* 相对定位使其在原来位置 */
+    position: relative;
     z-index: 99;
   }
 
@@ -184,4 +214,5 @@
     left: 0;
     right: 0;
   }
+
 </style>

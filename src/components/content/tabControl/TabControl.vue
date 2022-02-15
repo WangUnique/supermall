@@ -40,6 +40,7 @@ export default {
 <style>
   .tab-control {
     display: flex;
+    background-color: #f6f6f6;
     text-align: center;
     height: 40px;
     line-height: 40px;
