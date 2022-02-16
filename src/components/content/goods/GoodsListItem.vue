@@ -1,5 +1,5 @@
 <template>
-  <div class="goods-item">
+  <div class="goods-item" @click="itemClick">
     <!-- @load 监听加载  监听后调用scroll的refresh-->
     <img :src="goodsItem.show.img" alt="" @load="imgLoad">
     <div class="goods-info">
@@ -26,6 +26,9 @@ export default {
     imgLoad() {
       // 通过事件总线发送事件
       this.$bus.$emit('itemImageLoad')
+    },
+    itemClick() {
+      this.$router.push('/detail/' + this.goodsItem.iid)
     }
   },
 }
