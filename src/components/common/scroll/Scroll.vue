@@ -53,19 +53,19 @@
       // 封装方法放置Home组件代码过于繁杂难懂
       scrollTo(x, y, time = 500) {
         // this.scroll && 的作用是内部执行顺序的问题导致可能会找不到scroll 从而报错
-        console.log('Scroll.vue中__控制主页右下加一键到顶按钮');
+        // console.log('Scroll.vue中__控制主页右下加一键到顶按钮');
         this.scroll && this.scroll.scrollTo(x, y, time)
       },
       finishPullUp() {
-        console.log('Scroll.vue中__控制上拉刷新的');
+        // console.log('Scroll.vue中__控制上拉刷新的');
         this.scroll && this.scroll.finishPullUp()
       },
       refresh() {
-        console.log('Scroll.vue中__测试防抖效果 QAQ ');
+        // console.log('Scroll.vue中__测试防抖效果 QAQ ');
         this.scroll && this.scroll.refresh()
       },
       getScrollY() {
-        console.log('Scroll.vue中__获取当前滚动的Y值');
+        // console.log('Scroll.vue中__获取当前滚动的Y值');
         return this.scroll ? this.scroll.y : 0
       }
     },

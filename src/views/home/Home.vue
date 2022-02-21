@@ -44,10 +44,12 @@
   import FeatureView from './childComps/FeatureView'
   // 网络请求数据
 
+  import {itemListenerMixin} from 'common/mixin'
   import {getHomeMultidata,getHomeGoods} from "network/home"
-  import { debounce } from "common/utils"
+  import { debouce } from "common/utils"
   export default {
     name: 'Home',
+    mixins: [itemListenerMixin],
     components: {
       NavBar,
       HomeSwiper,
@@ -78,7 +80,7 @@
         // 默认情况下是否吸顶
         isTabFixed: false,
         // 默认的留存位置坐标
-        saveY: 0
+        saveY: 0,
       }
     },
     created() {
@@ -93,15 +95,6 @@
 
     },
     mounted() {
-      // 监听item图片加载 
-      // 在mounted里监听是因为为了保证this.$refs是有值的
-      const refresh = debounce(this.$refs.scroll.refresh, 200)
-      this.$bus.$on('itemImageLoad', () => {
-        refresh()
-      })
-
-
-
     },
     activated() {
       this.$refs.scroll.scrollTo(0, this.saveY, 0)
@@ -109,6 +102,9 @@
     },
     deactivated() {
       this.saveY = this.$refs.scroll.getScrollY()
+
+      // 取消全局事件监听
+      this.$bus.$off("itemImgLoad", this.itemImgListener)
     },
     // 通过计算属性来更改数据的切换
     computed: {
