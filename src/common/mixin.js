@@ -1,4 +1,5 @@
 import { debouce } from "common/utils"
+
 export const itemListenerMixin = {
   data() {
     return {

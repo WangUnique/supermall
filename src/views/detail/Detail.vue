@@ -10,6 +10,8 @@
       <detail-comment-info ref="comment" :comment-info="commentInfo"/>
       <goods-list ref="recommend" :goods="recommend"/>
     </scroll>
+    <detail-bottom-bar/>
+    <back-top @click.native="backClick" v-show="isShowBackTop"/>
   </div>
 </template>
 
@@ -21,6 +23,8 @@
   import DetailGoodsInfo from './childComps/DetailGoodsInfo'
   import DetailParamInfo from './childComps/DetailParamInfo'
   import DetailCommentInfo from './childComps/DetailCommentInfo'
+  import DetailBottomBar from './childComps/DetailBottomBar'
+  import BackTop from 'components/content/backTop/BackTop'
   import GoodsList from 'components/content/goods/GoodsList'
 
   // 请求数据
@@ -44,7 +48,8 @@
         recommend: [],
         themeTopYs: [],
         getThemeTopY: null,
-        currentIndex: 0
+        currentIndex: 0,
+        isShowBackTop: false,
       }
     },
     components: {
@@ -55,7 +60,9 @@
       DetailGoodsInfo,
       DetailParamInfo,
       DetailCommentInfo,
+      DetailBottomBar,
       GoodsList,
+      BackTop,
       Scroll
     },
     created() {
@@ -88,7 +95,7 @@
           this.themeTopYs.push(this.$refs.params.$el.offsetTop)
           this.themeTopYs.push(this.$refs.comment.$el.offsetTop)
           this.themeTopYs.push(this.$refs.recommend.$el.offsetTop)
-          console.log(this.themeTopYs);
+          this.themeTopYs.push(Number.MAX_VALUE)
         }, 100)
         // 渲染完后回调该函数,直接放到后面会因为渲染问题无法访问到数据
         // this.$nextTick(() => {
@@ -108,16 +115,22 @@
         const POSITIONY = -position.y
         // 与THEMETOPY的值对比
         let len = this.themeTopYs.length
-        for(let i = 0; i < len; i++) {
-          if(this.currentIndex !== i && ((i < len -1 && POSITIONY >= this.themeTopYs[i] && POSITIONY < this.themeTopYs[i+1]) || (i === len - 1 && POSITIONY >= this.themeTopYs[i]))){
+        for(let i = 0; i < len-1; i++) {
+          // if(this.currentIndex !== i && ((i < len -1 && POSITIONY >= this.themeTopYs[i] && POSITIONY < this.themeTopYs[i+1]) || (i === len - 1 && POSITIONY >= this.themeTopYs[i]))){
+          //   this.currentIndex = i
+          //   this.$refs.nav.currentIndex = this.currentIndex
+          // }
+          if(this.currentIndex !== i && (POSITIONY >= this.themeTopYs[i] && POSITIONY < this.themeTopYs[i+1])){
             this.currentIndex = i
-            // console.log(this.currentIndex);
             this.$refs.nav.currentIndex = this.currentIndex
           }
         }
-      }
-    },
-    mounted() {
+        // 判断BackTop是否显示，因为position是负数所以取负值
+        this.isShowBackTop = (-position.y) > 1000
+      },
+      backClick() {
+        this.$refs.scroll.scrollTo(0, 0, 800)
+      },
     },
     // 因为keepalive
     destroyed() {
@@ -135,7 +148,8 @@
   }
 
   .content {
-    height: calc(100% - 44px);
+    height: calc(100% - 88px);
+    overflow: hidden;
   }
 
   .detail-nav {
