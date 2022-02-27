@@ -2,6 +2,9 @@
   <div id="detail">
     <detail-nav-bar class="detail-nav" @titleClick="titleClick" ref="nav"/>
     <scroll class="content" ref="scroll" :probe-type="3" @scroll="contentScroll">
+      <ul>
+        <li v-for="(item, index) in $store.state.cartList" :key="index">{{item}}</li>
+      </ul>
       <detail-swiper :top-images="topImages"/>
       <detail-base-info :goods="goods"/>
       <detail-shop-info :shop="shop"/> 
@@ -10,7 +13,7 @@
       <detail-comment-info ref="comment" :comment-info="commentInfo"/>
       <goods-list ref="recommend" :goods="recommend"/>
     </scroll>
-    <detail-bottom-bar/>
+    <detail-bottom-bar @addCart="addToCart"/>
     <back-top @click.native="backClick" v-show="isShowBackTop"/>
   </div>
 </template>
@@ -131,6 +134,19 @@
       backClick() {
         this.$refs.scroll.scrollTo(0, 0, 800)
       },
+      addToCart() {
+        // 1 获取展示信息
+        const product = {}
+        product.image = this.topImages[0]
+        product.title = this.goods.title
+        product.desc = this.goods.desc
+        product.price = this.goods.realPrice
+        product.iid = this.iid
+
+        // 2 将商品添加到购物车
+        // this.$store.commit('addCart', product)
+        this.$store.dispatch('addCart', product)
+      }
     },
     // 因为keepalive
     destroyed() {
@@ -148,7 +164,7 @@
   }
 
   .content {
-    height: calc(100% - 88px);
+    height: calc(100% - 93px);
     overflow: hidden;
   }
 

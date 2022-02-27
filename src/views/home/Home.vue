@@ -46,7 +46,6 @@
 
   import {itemListenerMixin} from 'common/mixin'
   import {getHomeMultidata,getHomeGoods} from "network/home"
-  import { debouce } from "common/utils"
   export default {
     name: 'Home',
     mixins: [itemListenerMixin],

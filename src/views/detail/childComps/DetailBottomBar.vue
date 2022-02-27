@@ -34,12 +34,9 @@ export default {
 
 <style scoped>
   .bottom-bar {
-    /* position: relative;
-    background: #fff;
-    height: 44px;
-    bottom: 49px; */
     display: flex;
     text-align: center;
+
     position: fixed;
     left: 0;
     right: 0;
@@ -54,13 +51,13 @@ export default {
       flex: 1;
   }
   .bar-left span {
-      font-size: 12px;
+      font-size: 13px;
   }
   .bar-left .img{
       display: block;
       width: 22px;
       height: 22px;
-      margin: 5px auto -2px;
+      margin: 6px auto 3px;
       background: url('~assets/img/detail/detail_bottom.png') 0 0 / 100%; 
   }
   .bar-left .service {
@@ -70,17 +67,17 @@ export default {
       background-position: 0 -98px;
   }
   .bar-right {
-      font-size: 14px;
+      font-size: 15px;
       color: #fff;
-      line-height: 44px;
+      line-height: 49px;
   }
   .cart {
-    height: 44px;
+    height: 49px;
     background-color: #ffe817;
     color: #333;
   }
   .buy {
-    height: 44px;
+    height: 49px;
     background-color: #f69;
   }
 </style>
