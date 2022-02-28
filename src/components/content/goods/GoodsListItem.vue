@@ -1,7 +1,7 @@
 <template>
   <div class="goods-item" @click="itemClick">
     <!-- @load 监听加载  监听后调用scroll的refresh-->
-    <img :src="showImage" alt="" @load="imgLoad">
+    <img v-lazy="showImage" alt="" @load="imgLoad" :key="showImage">
     <div class="goods-info">
       <p>{{goodsItem.title}}</p>
       <span class="price">{{goodsItem.price}}</span>

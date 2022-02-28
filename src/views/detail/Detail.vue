@@ -2,9 +2,6 @@
   <div id="detail">
     <detail-nav-bar class="detail-nav" @titleClick="titleClick" ref="nav"/>
     <scroll class="content" ref="scroll" :probe-type="3" @scroll="contentScroll">
-      <ul>
-        <li v-for="(item, index) in $store.state.cartList" :key="index">{{item}}</li>
-      </ul>
       <detail-swiper :top-images="topImages"/>
       <detail-base-info :goods="goods"/>
       <detail-shop-info :shop="shop"/> 
@@ -34,8 +31,13 @@
   import {getDetail, Goods, Shop, GoodsParam, getRecommend} from 'network/detail'
   import { debouce } from "common/utils"
   import {itemListenerMixin} from 'common/mixin'
+
   // batter-scroll
   import Scroll from 'components/common/scroll/Scroll'
+
+  // 映射methods
+  import { mapActions } from 'vuex'
+
   export default {
     name: "Detail",
     mixins: [itemListenerMixin],
@@ -66,7 +68,7 @@
       DetailBottomBar,
       GoodsList,
       BackTop,
-      Scroll
+      Scroll,
     },
     created() {
       // 保存传入的iid
@@ -106,6 +108,7 @@
       })
     },
     methods: {
+      ...mapActions(['addCart']),
       imageLoad() {
         this.$refs.scroll.refresh()
         this.getThemeTopY()
@@ -145,7 +148,14 @@
 
         // 2 将商品添加到购物车
         // this.$store.commit('addCart', product)
-        this.$store.dispatch('addCart', product)
+        // this.$store.dispatch('addCart', product).then(res => {
+        //   console.log(res);
+        // })
+        // 通过mapActions映射到方法后直接调用
+        this.addCart(product).then(res => {
+          this.$toast.show(res, 2000)
+          console.log(this.$toast);
+        })
       }
     },
     // 因为keepalive
@@ -158,7 +168,7 @@
 <style scoped>
   #detail {
     position: relative;
-    z-index: 9;
+    z-index: 1;
     background-color: #fff;
     height: 100vh;
   }

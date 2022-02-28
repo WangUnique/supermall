@@ -10,6 +10,11 @@
   --line-height: 1.5;
 }
 
+/* 解决fastclick双击报错问题 */
+*{
+  touch-action: pan-y
+}
+
 *,
 *::before,
 *::after {

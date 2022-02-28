@@ -4,12 +4,10 @@
     <nav-bar class="nav-bar">
       <div slot="center">购物车({{length}})</div>
     </nav-bar>
-
     <!-- 列表 -->
     <cart-list/>
     <!-- 底部提交汇总 -->
     <cart-bottom-bar/>
-    
   </div>
 </template>
 
