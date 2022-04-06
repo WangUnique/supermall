@@ -15,8 +15,8 @@
     components: {
       MainTabBar,
     },
-    
   }
+  
 </script>
 
 <style scoped>
